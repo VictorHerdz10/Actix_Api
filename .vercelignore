@@ -1,7 +1,0 @@
-# Ignorar todo
-*
-
-# Excepto estos archivos necesarios
-!target/release/rust-api
-!api/
-!vercel.json
