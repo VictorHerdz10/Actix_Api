@@ -1,6 +1,8 @@
-target
-.dockerignore
-Dockerfile
-.git
+# Ignorar todo lo innecesario
+target/
+.git/
 .gitignore
+.env
+*.log
+
 README.md
