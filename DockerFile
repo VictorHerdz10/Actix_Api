@@ -8,6 +8,7 @@ RUN cargo build --release
 # Final run stage
 FROM debian:bookworm-slim AS runner
 
+
 WORKDIR /app
 COPY --from=builder /app/target/release/rust-api /app/rust-api
 CMD ["/app/rust-api"]
