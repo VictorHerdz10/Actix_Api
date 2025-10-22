@@ -4,7 +4,6 @@ use actix_web::{
     middleware::Logger,
     post, put,
     web::{Data, Json, Path, Query},
-    HttpResponse,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
