@@ -311,16 +311,3 @@ MIT License - puedes usar este código como quieras.
 - Agregar más validaciones y manejo de errores
 - Implementar rate limiting
 ```
-
-Copia y pega este contenido en tu archivo `README.md`. Este README incluye:
-
-- ✅ **Descripción completa** del proyecto
-- ✅ **Instrucciones de instalación** y desarrollo local
-- ✅ **Ejemplos de uso** de todos los endpoints
-- ✅ **Guía de despliegue** en Vercel
-- ✅ **Formatos de datos** y respuestas
-- ✅ **Script de testing** incluido
-- ✅ **Recursos adicionales** para aprender más
-- ✅ **Consideraciones** para producción
-
-¡Listo! Tu README estará completo y profesional.
