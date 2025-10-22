@@ -2,34 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "Cargo.toml",
-      "use": "@vercel/rust"
+      "src": "**/*.rs",
+      "use": "@vercel-community/rust@latest"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "rust-api"
+      "dest": "/rust-api"
     }
-  ],
-  "env": {
-    "RUST_LOG": "info"
-  },
-  "functions": {
-    "rust-api": {
-      "runtime": "rust",
-      "memory": 1024
-    }
-  },
-  "build": {
-    "env": {
-      "RUSTUP_HOME": "/vercel/.rustup",
-      "CARGO_HOME": "/vercel/.cargo"
-    },
-    "commands": [
-      "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable",
-      "source /vercel/.cargo/env",
-      "cargo build --release"
-    ]
-  }
+  ]
 }
