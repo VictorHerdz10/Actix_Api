@@ -1,8 +1,6 @@
-# Ignorar todo lo innecesario
+dockerignore
 target/
 .git/
-.gitignore
 .env
 *.log
-
 README.md
