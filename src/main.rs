@@ -4,11 +4,12 @@ use actix_web::{
     middleware::Logger,
     post, put,
     web::{Data, Json, Path, Query},
+    HttpResponse,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use tracing_subscriber::prelude::*; // Add this import
+use tracing_subscriber::prelude::*;
 
 type AppState = Data<Arc<Mutex<HashMap<String, User>>>>;
 
@@ -65,13 +66,10 @@ impl<T> ApiResponse<T> {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // Load environment variables
-    dotenv::dotenv().ok();
-
-    // Initialize tracing - FIXED
+    // Initialize tracing
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "rust_api=debug,actix_web=info".into()),
+            std::env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
         ))
         .with(tracing_subscriber::fmt::layer())
         .init();
@@ -80,11 +78,12 @@ async fn main() -> std::io::Result<()> {
     let state: Arc<Mutex<HashMap<String, User>>> = Arc::new(Mutex::new(HashMap::new()));
     let app_state = Data::new(state);
 
-    // Get port from environment or default to 3000
-   let port: u16 = std::env::var("PORT")
-    .unwrap_or_else(|_| "3000".to_string())
-    .parse()
-    .expect("PORT must be a number");
+    // Get port from environment or default to 8080 (Vercel usa 8080)
+    let port = std::env::var("PORT")
+        .unwrap_or_else(|_| "8080".to_string())
+        .parse::<u16>()
+        .expect("PORT must be a number");
+
     let addr = format!("0.0.0.0:{}", port);
     tracing::info!("Starting Actix-web server on {}", addr);
 
@@ -102,11 +101,11 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .service(health_check)
             .service(api_info)
-            .service(get_users) // Register as service, not route
-            .service(get_user) // Register as service, not route
-            .service(create_user) // Register as service, not route
-            .service(update_user) // Register as service, not route
-            .service(delete_user) // Register as service, not route
+            .service(get_users)
+            .service(get_user)
+            .service(create_user)
+            .service(update_user)
+            .service(delete_user)
     })
     .bind(&addr)?
     .run()
@@ -118,7 +117,7 @@ async fn health_check() -> Result<Json<ApiResponse<String>>> {
     Ok(Json(ApiResponse::success("OK".to_string())))
 }
 
-#[get("/api")]
+#[get("/")]
 async fn api_info() -> Result<Json<ApiResponse<serde_json::Value>>> {
     let info = serde_json::json!({
         "name": "Rust API with Actix-web",
@@ -127,7 +126,7 @@ async fn api_info() -> Result<Json<ApiResponse<serde_json::Value>>> {
         "framework": "Actix-web",
         "endpoints": {
             "GET /health": "Health check endpoint",
-            "GET /api": "API information",
+            "GET /": "API information",
             "GET /api/users": "Get all users",
             "POST /api/users": "Create a new user",
             "GET /api/users/{id}": "Get user by ID",
