@@ -29,10 +29,6 @@ chrono = { version = "0.4", features = ["serde"] }
 # Futures
 futures = "0.3"
 
-[lib]
-name = "rust_api"
-crate-type = ["cdylib"]
-
 [[bin]]
 name = "rust-api"
 path = "src/main.rs"
