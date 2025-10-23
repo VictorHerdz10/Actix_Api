@@ -1,168 +1,266 @@
+# 🚀 Rust API con Actix-web
 
-# Rust API con Actix-web
+Una API REST moderna construida con Rust y el framework Actix-web, implementando arquitectura MVC y mejores prácticas de seguridad.
 
-Una API REST simple construida con Rust y el framework Actix-web, desplegable en Vercel.
+## ✨ Características
 
-## 🚀 Características
+- **🛠 Framework**: Actix-web 4.4
+- **🗄️ Base de datos**: PostgreSQL con SeaORM
+- **🔐 Autenticación**: JWT (JSON Web Tokens)
+- **🔒 Seguridad**: BCrypt para hash de contraseñas
+- **🌐 CORS**: Configuración completa de CORS
+- **📊 Logging**: Tracing y logging estructurado
+- **🏗️ Arquitectura**: MVC (Modelo-Vista-Controlador)
+- **🐳 Docker**: Configuración lista para Docker
+- **🚀 Ready for Production**: Configuración para entornos de desarrollo y producción
 
-- **Framework**: Actix-web (alto rendimiento y madurez)
-- **Async Runtime**: Actix-rt (basado en Tokio)
-- **Serialización**: Serde + JSON
-- **CORS**: Configurado para permitir cualquier origen
-- **Logging**: Tracing + Actix-web Logger
-- **Estado en memoria**: HashMap para almacenamiento temporal
-- **Paginación**: Soporte para limit/offset en listados
-- **Middleware**: Logger integrado para debugging
-
-## 📁 Estructura del Proyecto
+## 🏗️ Estructura del Proyecto
 
 ```
-rust-api/
-├── src/
-│   └── main.rs          # Código principal de la API
-├── Cargo.toml           # Dependencias y configuración
-├── vercel.json          # Configuración de despliegue en Vercel
-├── .env.example         # Variables de entorno de ejemplo
-└── README.md            # Esta documentación
+src/
+├── main.rs                 # Punto de entrada de la aplicación
+├── config/                 # Configuración de base de datos
+├── models/                 # Modelos de datos (Entidades SeaORM)
+├── controllers/            # Lógica de negocio
+├── routes/                 # Definición de rutas
+├── middleware/             # Middleware (Auth, CORS)
+├── utils/                  # Utilidades (JWT, Password)
+└── errors/                 # Manejo de errores
 ```
 
-## 🔧 Endpoints de la API
-
-### Health Check
-- `GET /health` - Verifica si el servidor está funcionando
-
-### Información de la API
-- `GET /api` - Retorna información sobre la API y sus endpoints
-
-### Gestión de Usuarios
-- `GET /api/users` - Obtiene todos los usuarios (con paginación)
-- `POST /api/users` - Crea un nuevo usuario
-- `GET /api/users/:id` - Obtiene un usuario por ID
-- `PUT /api/users/:id` - Actualiza un usuario por ID
-- `DELETE /api/users/:id` - Elimina un usuario por ID
-
-
-## 🛠️ Desarrollo Local
+## 🚀 Instalación y Configuración
 
 ### Prerrequisitos
-- Rust 1.70+ 
+
+- Rust 1.70+
+- PostgreSQL
 - Cargo
 
-### Instalar Rust (si no lo tienes)
+### 1. Clonar el repositorio
+
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source ~/.cargo/env
+git clone https://github.com/VictorHerdz10/Actix_Api.git
+cd Actix_Api
 ```
 
-### Ejecutar localmente
+### 2. Configurar variables de entorno
+
 ```bash
-# Clonar el proyecto
-git clone <repo>
-cd rust-api
+# Crear archivo de entorno de desarrollo
+cp .env.example .env.development
 
-# Copiar variables de entorno
-cp .env.example .env
+# Editar con tus valores
+nano .env.development
+```
 
-# Ejecutar el servidor
+### 3. Ejecutar la aplicación
+
+```bash
+# Desarrollo
+cargo run
+
+# Producción
+cargo build --release
+./target/release/rust-api
+```
+
+## 🐳 Ejecutar con Docker
+
+### Construir y ejecutar con Docker:
+
+```bash
+# Construir la imagen
+docker build -t actix-api .
+
+# Ejecutar el contenedor
+docker run -p 8080:8080 --env-file .env.development actix-api
+```
+
+### O usar Docker Compose:
+
+```bash
+docker-compose up --build
+```
+
+## 📋 Variables de Entorno
+
+Crear un archivo `.env.development` con:
+
+```env
+# Servidor
+PORT=8080
+RUST_LOG=debug
+HOST=0.0.0.0
+
+# Base de datos
+DATABASE_URL=postgres://usuario:contraseña@localhost:5432/rust_api_dev
+
+# JWT
+JWT_SECRET=tu_clave_super_secreta_minimo_32_caracteres
+JWT_EXPIRATION_HOURS=24
+
+# Bcrypt
+BCRYPT_COST=8
+```
+
+## 📚 Endpoints de la API
+
+### 🔓 Endpoints Públicos
+
+- `GET /api/salud` - Verificación del estado del servidor
+- `GET /api/info` - Información de la API
+- `POST /api/auth/registro` - Registrar nuevo usuario
+- `POST /api/auth/login` - Iniciar sesión
+
+### 🔐 Endpoints Protegidos (Requieren JWT)
+
+- `GET /api/usuarios` - Obtener todos los usuarios
+- `GET /api/usuarios/{id}` - Obtener usuario por ID
+- `PUT /api/usuarios/{id}` - Actualizar usuario
+- `DELETE /api/usuarios/{id}` - Eliminar usuario
+- `GET /api/auth/perfil` - Obtener perfil del usuario actual
+
+## 🔐 Autenticación
+
+La API utiliza JWT para autenticación. Para acceder a endpoints protegidos:
+
+```http
+Authorization: Bearer <tu_token_jwt>
+```
+
+### Ejemplo de Registro
+
+```bash
+curl -X POST http://localhost:8080/api/auth/registro \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Juan Pérez",
+    "email": "juan@ejemplo.com",
+    "password": "mi_contraseña_segura"
+  }'
+```
+
+### Ejemplo de Login
+
+```bash
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "juan@ejemplo.com",
+    "password": "mi_contraseña_segura"
+  }'
+```
+
+Respuesta:
+```json
+{
+  "exito": true,
+  "mensaje": "Inicio de sesión exitoso",
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "usuario": {
+    "id": "uuid-del-usuario",
+    "email": "juan@ejemplo.com",
+    "nombre": "Juan Pérez"
+  }
+}
+```
+
+## 🛠️ Desarrollo
+
+### Ejecutar en modo desarrollo
+
+```bash
 cargo run
 ```
 
-El servidor estará disponible en `http://localhost:3000`
+La aplicación estará disponible en `http://localhost:8080`
 
-### Probar la API localmente
+### Ejecutar tests
+
 ```bash
-# Health check
-curl http://localhost:3000/health
-
-# Crear usuario
-curl -X POST http://localhost:3000/api/users \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Test User", "email": "test@example.com"}'
-
-# Obtener usuarios
-curl http://localhost:3000/api/users
+cargo test
 ```
 
-## 📊 Formato de Respuestas
+### Formatear código
 
-Todas las respuestas siguen este formato:
+```bash
+cargo fmt
+```
 
-```json
-{
-  "success": true,
-  "data": { ... },
-  "message": "Operation successful"
+### Verificar linting
+
+```bash
+cargo clippy
+```
+
+## 📦 Dependencias Principales
+
+- **actix-web** - Framework web asyncrono
+- **sea-orm** - ORM para Rust
+- **jsonwebtoken** - Implementación de JWT
+- **bcrypt** - Hash de contraseñas
+- **serde** - Serialización/Deserialización
+- **tracing** - Logging estructurado
+- **uuid** - Generación de UUIDs
+- **chrono** - Manejo de fechas y horas
+
+## 🗃️ Modelo de Usuario
+
+```rust
+struct User {
+    id: Uuid,                    // ID único
+    name: String,               // Nombre del usuario
+    email: String,              // Email único
+    password: String,           // Contraseña hasheada
+    created_at: DateTimeUtc,    // Fecha de creación
+    updated_at: DateTimeUtc,    // Fecha de actualización
 }
 ```
 
-En caso de error:
-```json
-{
-  "success": false,
-  "data": null,
-  "message": "Error description"
-}
+## 🐳 Dockerfile
+
+El proyecto incluye un Dockerfile optimizado para producción:
+
+```dockerfile
+# Build stage
+FROM rust:bookworm AS builder
+
+WORKDIR /app
+COPY . .
+RUN cargo build --release
+
+# Final run stage
+FROM debian:bookworm-slim AS runner
+
+WORKDIR /app
+COPY --from=builder /app/target/release/rust-api /app/rust-api
+CMD ["/app/rust-api"]
 ```
-
-## 🔍 Modelo de Datos
-
-### User
-```json
-{
-  "id": "uuid-v4",
-  "name": "Nombre del usuario",
-  "email": "email@example.com",
-  "created_at": "2023-12-07T10:30:00Z"
-}
-```
-
-### CreateUser (para POST)
-```json
-{
-  "name": "Nombre del usuario",
-  "email": "email@example.com"
-}
-```
-
-### UpdateUser (para PUT)
-```json
-{
-  "name": "Nombre actualizado (opcional)",
-  "email": "email@actualizado.com (opcional)"
-}
-```
-
-## 🚨 Consideraciones
-
-1. **Estado**: La API usa almacenamiento en memoria, los datos se pierden al reiniciar
-2. **Producción**: Para producción, considera usar una base de datos real
-3. **Seguridad**: El CORS está configurado para permitir cualquier origen (ajustar según necesidad)
-4. **Performance**: Actix-web es extremadamente rápido y maduro, ideal para APIs de alto rendimiento
-
-
-```
-
-## 📚 Recursos Adicionales
-
-- [Documentación de Actix-web](https://docs.rs/actix-web/)
-- [Actix Documentation](https://actix.rs/)
-- [Vercel Functions Runtime for Rust](https://github.com/vercel/vercel/tree/main/packages/rust)
-- [Serde Documentation](https://serde.rs/)
-- [Rust Documentation](https://doc.rust-lang.org/)
 
 ## 🤝 Contribuir
 
-1. Fork del proyecto
-2. Crear una feature branch
-3. Commit con cambios
-4. Push a la branch
+1. Fork el proyecto
+2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abrir un Pull Request
 
-## 📄 Licencia
+## 📝 Licencia
 
-MIT License - puedes usar este código como quieras.
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+
+## 👨‍💻 Autor
+
+- **Victor Herdz** - [GitHub](https://github.com/VictorHerdz10)
+
+## 🙏 Agradecimientos
+
+- Equipo de Actix-web por el excelente framework
+- Comunidad de Rust por la documentación y soporte
+- Desarrolladores de SeaORM por el poderoso ORM
 
 ---
 
+**¿Problemas o sugerencias?** ¡Abre un issue en el repositorio! 🐛
 
-```
+**⭐ ¿Te gusta este proyecto? ¡Dale una estrella al repositorio!**
