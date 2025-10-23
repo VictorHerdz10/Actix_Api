@@ -208,7 +208,7 @@ cargo clippy
 
 ```rust
 struct User {
-    id: Uuid,                    // ID único
+    id: i32,                    // ID único
     name: String,               // Nombre del usuario
     email: String,              // Email único
     password: String,           // Contraseña hasheada
